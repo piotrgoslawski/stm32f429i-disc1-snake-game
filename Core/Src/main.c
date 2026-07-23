@@ -25,7 +25,7 @@ int main(void)
     LOG_INFO("ILI9341 LCD initializing");
 
     ILI9341_Init(&hspi5);
-    ILI9341_FillScreen(ILI9341_BLUE);
+    ILI9341_FillScreen(ILI9341_CYAN);
 
     LOG_INFO("L3GD20 gyroscope initializing");
     L3GD20_Init(&hspi5);
@@ -33,7 +33,7 @@ int main(void)
     /* Draw "Hello World!" centered on the 320x240 display */
     const char *msg = "HELLO WORLD!";
     /* 12 chars * 8px/char = 96px wide, centered at x=(320-96)/2=112 */
-    ILI9341_DrawString(112, 116, msg, ILI9341_WHITE, ILI9341_BLUE);
+    ILI9341_DrawString(112, 116, msg, ILI9341_RED, ILI9341_CYAN);
 
     LOG_INFO("HELLO WORLD! drawn on LCD");
     LOG_WARN("example warning-level message");
