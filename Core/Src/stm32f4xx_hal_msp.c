@@ -29,7 +29,12 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
     gpio.Alternate = GPIO_AF5_SPI5;
     HAL_GPIO_Init(GPIOF, &gpio);
 
-    /* LCD CS=PC2, GYRO CS=PC1, DC=PD13 as push-pull outputs */
+    /* LCD CS=PC2, GYRO CS=PC1, DC=PD13 as push-pull outputs.
+     * Both CS lines are active-low: preset them HIGH (deselected) before
+     * switching the pins to output mode, so neither device is left
+     * selected on the shared bus by the GPIO reset-default ODR=0. */
+    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1 | GPIO_PIN_2, GPIO_PIN_SET);
+
     gpio.Pin   = GPIO_PIN_1 | GPIO_PIN_2;
     gpio.Mode  = GPIO_MODE_OUTPUT_PP;
     gpio.Pull  = GPIO_NOPULL;
