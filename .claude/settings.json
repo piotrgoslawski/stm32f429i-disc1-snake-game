@@ -1,0 +1,37 @@
+{
+  "permissions": {
+    "deny": [
+      "Bash(sudo:*)",
+      "Bash(su:*)",
+      "Bash(git push:*)",
+      "Bash(git push*)",
+      "Bash(git remote add:*)",
+      "Bash(git remote set-url:*)",
+      "Bash(git remote remove:*)",
+      "Bash(git remote rm:*)",
+      "Bash(gh pr create:*)",
+      "Bash(gh pr merge:*)",
+      "Bash(gh release:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(git clean -f:*)",
+      "Bash(git clean -fd:*)",
+      "Bash(git checkout -- :*)",
+      "Bash(git branch -D:*)",
+      "Bash(rm -rf:*)",
+      "Bash(rm -rf /*)",
+      "Bash(apt-get install:*)",
+      "Bash(apt install:*)",
+      "Bash(pip install:*)",
+      "Bash(npm install -g:*)",
+      "Bash(brew install:*)",
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(**/*credentials*)",
+      "Read(**/*secret*)",
+      "Read(**/id_rsa*)",
+      "Read(**/id_ed25519*)",
+      "Read(**/.ssh/**)",
+      "Read(**/.aws/**)"
+    ]
+  }
+}

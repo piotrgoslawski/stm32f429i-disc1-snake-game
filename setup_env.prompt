@@ -1,0 +1,269 @@
+Prepare a native Claude Code setup for repeatable planner → implementer → reviewer experiments in this repository.
+
+Do not implement any product feature yet. Your task is only to create and document the orchestration setup.
+
+First inspect:
+
+* the repository structure;
+* existing `.claude` configuration;
+* build and test commands;
+* Git workflow;
+* any project-specific constraints, especially embedded-system constraints.
+
+Create the following setup.
+
+## 1. Planner subagent
+
+Create:
+
+```text
+.claude/agents/planner.md
+```
+
+The planner must:
+
+* inspect the task and repository;
+* remain strictly read-only;
+* identify relevant files, symbols, dependencies, and risks;
+* produce a minimal implementation plan;
+* list acceptance criteria;
+* list assumptions and unresolved questions;
+* propose deterministic build and test commands;
+* identify anything requiring physical hardware verification;
+* never edit files;
+* never claim that compilation, tests, or hardware behavior were verified unless evidence is available.
+
+Its output should follow a stable structure:
+
+```text
+Summary
+Repository findings
+Acceptance criteria
+Implementation steps
+Files likely to change
+Risks
+Verification plan
+Open questions
+```
+
+## 2. Implementer subagent
+
+Create:
+
+```text
+.claude/agents/implementer.md
+```
+
+The implementer must:
+
+* receive the original task and the planner’s approved plan;
+* inspect the existing code before modifying it;
+* make the smallest focused change that satisfies the task;
+* report any deviation from the plan;
+* avoid unrelated refactoring;
+* preserve existing APIs unless explicitly requested otherwise;
+* avoid dynamic allocation where inappropriate for embedded code;
+* not push, publish, create pull requests, or modify remote resources;
+* not weaken or remove tests to make them pass;
+* run relevant local checks;
+* leave all modifications uncommitted for review.
+
+Its final response should contain:
+
+```text
+Status
+Summary
+Files changed
+Plan deviations
+Checks executed
+Known limitations
+Remaining risks
+```
+
+## 3. Reviewer subagent
+
+Create:
+
+```text
+.claude/agents/reviewer.md
+```
+
+The reviewer must:
+
+* be strictly read-only;
+* review the original task, planner output, Git diff, and test evidence;
+* independently inspect relevant repository code;
+* focus on functional bugs rather than style preferences;
+* check boundary conditions, state transitions, undefined behavior, resource usage, timing assumptions, and regressions;
+* verify whether every acceptance criterion is addressed;
+* distinguish confirmed defects from uncertain risks;
+* never modify the implementation.
+
+Use these severities:
+
+```text
+blocker
+major
+minor
+note
+```
+
+Its final response should contain:
+
+```text
+Verdict: approve / request changes / uncertain
+Summary
+Acceptance-criteria coverage
+Findings
+Missing evidence
+Suggested verification
+```
+
+## 4. Orchestration command
+
+Create a project-level Claude Code command using the currently supported native mechanism, preferably under:
+
+```text
+.claude/commands/
+```
+
+Name it something clear, such as:
+
+```text
+orchestrate-feature
+```
+
+The command should execute this flow:
+
+```text
+task
+  ↓
+planner
+  ↓
+human plan approval
+  ↓
+implementer
+  ↓
+deterministic build/test commands
+  ↓
+reviewer
+  ↓
+final summary
+```
+
+Requirements:
+
+* The implementer must not start until the plan has been explicitly approved.
+* The reviewer must not edit files.
+* Build and test results must be shown as evidence, not summarized as assumptions.
+* The final summary must clearly separate:
+
+  * model claims;
+  * deterministic evidence;
+  * items still requiring human or hardware verification.
+* Do not silently retry or repair reviewer findings.
+* Ask before starting a repair iteration.
+
+Use native Claude Code subagents and commands where supported. Do not create a custom Python framework unless native Claude Code functionality is insufficient.
+
+## 5. Task template
+
+Create:
+
+```text
+.claude/tasks/template.md
+```
+
+Use this structure:
+
+```text
+# Task
+
+## Goal
+
+## Background
+
+## Acceptance criteria
+
+## Constraints
+
+## Out of scope
+
+## Build commands
+
+## Test commands
+
+## Hardware verification
+
+## Additional context
+```
+
+## 6. Documentation
+
+Create:
+
+```text
+.claude/ORCHESTRATION.md
+```
+
+Explain:
+
+* which files were created;
+* how to define a task;
+* how to start the workflow;
+* how plan approval works;
+* which model each role currently uses;
+* how to change role models;
+* how to run planner, implementer, or reviewer independently;
+* which parts are deterministic and which depend on model judgment;
+* known limitations of the setup.
+
+## Model configuration
+
+Use model assignments as editable defaults rather than permanent architectural decisions.
+
+Start with:
+
+```text
+planner: sonnet
+implementer: sonnet
+reviewer: opus
+```
+
+If the installed Claude Code version uses different supported model identifiers, use the valid identifiers and document them.
+
+Do not encode assumptions that these models are optimal. Add a clear comment that model-role assignments are experimental and should later be benchmarked.
+
+## Permissions
+
+Configure the smallest practical tool set:
+
+```text
+planner: Read, Glob, Grep
+implementer: Read, Glob, Grep, Edit, Write, Bash
+reviewer: Read, Glob, Grep
+```
+
+Deny or explicitly prohibit:
+
+```text
+sudo
+git push
+remote repository changes
+destructive filesystem commands
+secret access
+package installation without approval
+```
+
+## Final verification
+
+After creating the setup:
+
+1. show every created or modified file;
+2. validate the Claude configuration syntax;
+3. explain any Claude Code limitations or unsupported configuration;
+4. demonstrate the workflow using a harmless read-only example task;
+5. do not make any product-code changes during the demonstration.
+
+Do not merely describe the files. Create them in the repository.
+
