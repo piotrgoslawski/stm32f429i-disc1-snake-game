@@ -18,7 +18,7 @@
 ## Constraints
 
 <!-- Anything the implementation must respect: existing APIs to preserve, peripherals/pins
-     already in use (see README.md pinout table), memory budget, timing budget, etc. -->
+     already in use (see docs/pinout.md; free-pin AF options in docs/pin-functions.md), memory budget, timing budget, etc. -->
 
 ## Out of scope
 

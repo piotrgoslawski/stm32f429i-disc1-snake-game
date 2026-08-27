@@ -36,7 +36,8 @@ are written to expect them:
 - **Goal / Background** — what and why.
 - **Acceptance criteria** — what the reviewer checks the diff against.
 - **Constraints** — APIs to preserve, pins/peripherals already spoken for
-  (see the pinout table in `README.md`), memory/timing budget.
+  (see `docs/pinout.md`; per-pin AF options in `docs/pin-functions.md`),
+  memory/timing budget.
 - **Out of scope** — keeps the planner from scope-creeping and the reviewer
   from flagging work nobody asked for.
 - **Build commands / Test commands** — deterministic commands to run as

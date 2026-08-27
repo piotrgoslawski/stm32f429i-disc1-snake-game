@@ -14,7 +14,9 @@ CMake-based bare-metal demo for the STM32F429I-Discovery board.
 
 - [STM32CubeCLT](https://www.st.com/en/development-tools/stm32cubeclt.html) — provides `arm-none-eabi-gcc` and Ninja
 - CMake ≥ 3.22
-- STM32Cube FW F4 package (placed at `~/STM32Cube/Repository/STM32Cube_FW_F4_V1.28.3/`)
+- STM32Cube FW F4 package (placed at `~/STM32Cube/Repository/STM32Cube_FW_F4_V1.28.3/`) —
+  the repo's `Drivers/` entry is a symlink to this package's `Drivers/` directory,
+  so the path must exist before the project can build
 
 ## Build
 
