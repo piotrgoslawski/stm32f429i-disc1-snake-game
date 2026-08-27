@@ -19,14 +19,15 @@ hardware) — see [pin-functions.md](pin-functions.md).
 | LCD CS (NCS) | PC2 | GPIO out | Active low |
 | LCD D/C (WRX) | PD13 | GPIO out | Data/command select |
 | LCD RDX | PD12 | GPIO out | Unused by SPI-only driver |
-| Gyro (L3GD20) CS | PC1 | GPIO out | Active low |
+| LCD TE | PD11 | GPIO in | Tearing-effect signal, unused |
+| Gyro CS | PC1 | GPIO out | Active low; L3GD20 (board rev ≤ D01) or I3G4250D (rev E01+, different WHO_AM_I) |
 | Gyro INT1 | PA1 | GPIO/EXTI | |
 | Gyro INT2 | PA2 | GPIO/EXTI | |
 | LED3 (green) | PG13 | GPIO out | |
 | LED4 (red) | PG14 | GPIO out | |
 | User button (B1) | PA0 | GPIO/EXTI | Pulled low, high when pressed |
-| USART1_TX | PA9 | AF7 | Also wired to OTG_FS VBUS sense — don't use USB OTG together with UART |
-| USART1_RX | PA10 | AF7 | Also wired to OTG_FS ID |
+| USART1_TX | PA9 | AF7 | Wired to ST-LINK VCP via SB11 (ON by default since board rev C01) — logs appear on the ST-LINK USB as a serial port, no external adapter needed |
+| USART1_RX | PA10 | AF7 | Wired to ST-LINK VCP via SB15 |
 
 ## LCD RGB interface (LTDC)
 
@@ -66,6 +67,20 @@ addition to) SPI. **Watch out: four pins use AF9, not AF14.**
 | I2C3_SDA | PC9 | AF4 |
 | Touch INT | PA15 | GPIO/EXTI |
 
+## USB user connector (CN6, on OTG_HS in FS mode)
+
+The micro-AB user USB connector is wired to the **OTG_HS** peripheral (used in
+full-speed mode with the internal PHY), not OTG_FS.
+
+| Signal | Pin | AF |
+|--------|-----|-----|
+| OTG_HS_ID | PB12 | AF12 |
+| VBUS sense | PB13 | additional function (no AF); LD5 (green) indicates VBUS |
+| OTG_HS_DM | PB14 | AF12 |
+| OTG_HS_DP | PB15 | AF12 |
+| Power switch on (PSO) | PC4 | GPIO out |
+| Overcurrent (OC) | PC5 | GPIO in; LD6 (red) indicates overcurrent |
+
 ## External SDRAM (IS42S16400J, 8 MB, FMC bank 2)
 
 All FMC pins are AF12.
@@ -93,5 +108,11 @@ All FMC pins are AF12.
   `~/STM32CubeMX/db/mcu/STM32F429ZITx.xml` (signals per pin) and
   `~/STM32CubeMX/db/mcu/IP/GPIO-STM32F427_gpio_v1_0_Modes.xml` (AF number per signal)
 - **Peripheral registers**: `/opt/st/stm32cubeclt_1.22.0/STMicroelectronics_CMSIS_SVD/STM32F429.svd`
-- Board-level details not covered here (expansion headers P1/P2, solder
-  bridges): ST user manual UM1670 / schematic MB1075, not stored locally.
+- **Datasheet AF table** (Table 12): `~/Work/stm32/DOC/stm32f437ai.pdf` —
+  DS9484 for STM32F437xx/F439xx; the F439 is the F429 plus a crypto block with
+  an identical pinout, so its AF mapping is valid for the F429ZI. This file's
+  tables were verified against it.
+- **Board user manual UM1670**: `~/Work/stm32/DOC/en.DM00093903.pdf` — pin-vs-
+  board-function table (Table 7), expansion headers P1/P2, solder bridges
+  (Table 6), board revision history. Also in `~/Work/stm32/DOC/`: the ILI9341
+  LCD controller datasheet and PM0214 (Cortex-M4 programming manual).
