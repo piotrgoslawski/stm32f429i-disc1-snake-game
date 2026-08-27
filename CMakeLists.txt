@@ -49,6 +49,21 @@ add_link_options(
     -Wl,--print-memory-usage
 )
 
+# STM32Cube FW F4 package (HAL/CMSIS/BSP sources). Set the STM32CUBE_F4_PATH
+# environment variable to its root, or install it at CubeMX's default
+# repository location under $HOME.
+if(DEFINED ENV{STM32CUBE_F4_PATH})
+    set(STM32CUBE_F4_PATH "$ENV{STM32CUBE_F4_PATH}" CACHE PATH "STM32Cube FW F4 package root")
+else()
+    set(STM32CUBE_F4_PATH "$ENV{HOME}/STM32Cube/Repository/STM32Cube_FW_F4_V1.28.3" CACHE PATH "STM32Cube FW F4 package root")
+endif()
+if(NOT EXISTS "${STM32CUBE_F4_PATH}/Drivers/STM32F4xx_HAL_Driver")
+    message(FATAL_ERROR
+        "STM32Cube FW F4 package not found at '${STM32CUBE_F4_PATH}'. "
+        "Install the STM32Cube F4 package and point the STM32CUBE_F4_PATH "
+        "environment variable at its root (the directory containing Drivers/).")
+endif()
+
 add_executable(${CMAKE_PROJECT_NAME})
 
 add_subdirectory(cmake/stm32cubemx)
