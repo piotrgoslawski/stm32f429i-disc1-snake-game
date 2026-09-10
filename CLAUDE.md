@@ -1,8 +1,10 @@
 # STM32F429I-DISC1 Hello World
 
 Bare-metal CMake project targeting the STM32F429I-Discovery board (STM32F429ZI,
-168 MHz, 2 MB FLASH, 256 KB RAM). See README.md for the full pinout table and
-CLion setup; this file covers what a coding agent needs to know.
+168 MHz, 2 MB FLASH, 256 KB RAM). See `docs/pinout.md` for the full board
+pinout with AF numbers (and the local sources of truth to verify against) and
+`docs/pin-functions.md` for every alternate function each pin supports;
+README.md covers CLion setup. This file covers what a coding agent needs to know.
 
 ## Build
 
@@ -17,13 +19,20 @@ but a plain shell needs the `export` first. Output: `build/Debug/hello_lcd.elf`.
 
 ## HAL driver source
 
-The project's own `Drivers/` tree is stripped down and has **no SPI HAL**. For
-any SPI/peripheral work, pull headers/sources from the full STM32Cube F4 package
-instead:
+`Drivers/` is a git-tracked **symlink** to the full STM32Cube F4 package:
 
 ```
-/home/yesiot/STM32Cube/Repository/STM32Cube_FW_F4_V1.28.3/Drivers/
+Drivers -> /home/yesiot/STM32Cube/Repository/STM32Cube_FW_F4_V1.28.3/Drivers
 ```
+
+The complete HAL (including SPI) is therefore available directly under
+`Drivers/`. Two consequences:
+
+- The build only works on a machine where that absolute path exists; a fresh
+  clone elsewhere must install the STM32Cube FW F4 package there (or recreate
+  the symlink to wherever it lives).
+- Never edit files under `Drivers/` — they live in the shared Cube package
+  outside this repo, and changes would silently affect every project using it.
 
 ## Clock configuration
 

@@ -7,9 +7,23 @@ set(CMAKE_CXX_COMPILER_ID GNU)
 
 set(TOOLCHAIN_PREFIX arm-none-eabi-)
 
-# Use the STM32CubeCLT bundled toolchain when available; fall back to PATH.
-set(STM32_TOOLCHAIN_PATH "/opt/st/stm32cubeclt_1.22.0/GNU-tools-for-STM32/bin")
-if(EXISTS "${STM32_TOOLCHAIN_PATH}/${TOOLCHAIN_PREFIX}gcc")
+# Toolchain location, in order of preference:
+#   1. $STM32_CUBECLT_PATH (root of an STM32CubeCLT install)
+#   2. newest STM32CubeCLT found in /opt/st/ (its default install location)
+#   3. arm-none-eabi-gcc on PATH
+if(DEFINED ENV{STM32_CUBECLT_PATH})
+    set(STM32_TOOLCHAIN_PATH "$ENV{STM32_CUBECLT_PATH}/GNU-tools-for-STM32/bin")
+else()
+    file(GLOB _cubeclt_candidates "/opt/st/stm32cubeclt_*")
+    list(SORT _cubeclt_candidates)
+    if(_cubeclt_candidates)
+        list(POP_BACK _cubeclt_candidates _cubeclt_root)
+        set(STM32_TOOLCHAIN_PATH "${_cubeclt_root}/GNU-tools-for-STM32/bin")
+    else()
+        set(STM32_TOOLCHAIN_PATH "")
+    endif()
+endif()
+if(STM32_TOOLCHAIN_PATH AND EXISTS "${STM32_TOOLCHAIN_PATH}/${TOOLCHAIN_PREFIX}gcc")
     set(TOOLCHAIN_BIN "${STM32_TOOLCHAIN_PATH}/")
 else()
     set(TOOLCHAIN_BIN "")

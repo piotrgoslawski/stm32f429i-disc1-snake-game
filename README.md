@@ -14,7 +14,9 @@ CMake-based bare-metal demo for the STM32F429I-Discovery board.
 
 - [STM32CubeCLT](https://www.st.com/en/development-tools/stm32cubeclt.html) — provides `arm-none-eabi-gcc` and Ninja
 - CMake ≥ 3.22
-- STM32Cube FW F4 package (placed at `~/STM32Cube/Repository/STM32Cube_FW_F4_V1.28.3/`)
+- STM32Cube FW F4 package (placed at `~/STM32Cube/Repository/STM32Cube_FW_F4_V1.28.3/`) —
+  the repo's `Drivers/` entry is a symlink to this package's `Drivers/` directory,
+  so the path must exist before the project can build
 
 ## Build
 
@@ -49,10 +51,14 @@ st-flash write build/Debug/hello_lcd.bin 0x08000000
 | USART1 TX | PA9  |
 | USART1 RX | PA10 |
 
-This board has no onboard USB-serial bridge, so connect an external USB-TTL
-adapter (e.g. FTDI) to PA9/PA10 (and GND) to view the log output at 115200
-8N1. Note PA9/PA10 are also wired to the OTG_FS VBUS-sense/ID lines on this
-board — don't use the USB OTG connector at the same time as the debug UART.
+On the STM32F429I-DISC1 (board rev C01 and later), USART1 (PA9/PA10) is wired
+to the onboard ST-LINK/V2-B Virtual COM Port via solder bridges SB11/SB15
+(closed by default) — the log output at 115200 8N1 appears as a serial port
+(e.g. `/dev/ttyACM0`) on the same USB cable used for flashing. An external
+USB-TTL adapter on PA9/PA10 is only needed on the original F429I-DISCO
+(ST-LINK/V2, no VCP) or if SB11/SB15 have been opened. The user USB OTG
+connector (CN6) is on separate pins (PB12–PB15, OTG_HS) and does not conflict
+with the UART.
 
 ## CLion
 
