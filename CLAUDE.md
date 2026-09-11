@@ -45,9 +45,13 @@ There is no `Drivers/` symlink and no STM32Cube HAL package anymore. All
 STM32F4 peripheral drivers (GPIO, SPI, LTDC, FMC/SDRAM, UART) come from
 Zephyr itself, under `~/zephyrproject/zephyr/drivers/` and
 `~/zephyrproject/zephyr/soc/st/stm32/` — read-only, same rule as above. The
-one hand-written peripheral driver left in this repo is `src/l3gd20.c` (the
-L3GD20 gyroscope has no in-tree Zephyr driver; Zephyr's `i3g4250d` driver
-rejects this chip's WHO_AM_I).
+one hand-written peripheral driver left in this repo is `src/l3gd20.c`, a
+register-level driver for the L3GD20/I3G4250D gyroscope. The board in use
+is a rev E01+ with the I3G4250D (measured WHO_AM_I 0xD3, 2026-09-11), which
+Zephyr's in-tree `i3g4250d` sensor driver *would* accept; the app-local
+driver is kept because it is tiny, also works on rev D01 boards (L3GD20,
+WHO_AM_I 0xD4, which the in-tree driver rejects), and keeps
+`L3GD20_ReadDPS()` unchanged from the HAL firmware.
 
 ## Pin and clock configuration
 

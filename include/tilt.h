@@ -21,8 +21,10 @@ typedef struct {
     float   lr_sign;  /* +1/-1: positive maps to RIGHT */
 } TiltMap;
 
-/* Determined empirically on hardware (rev D01 board, 2026-09-10) by logging
-   angle_x/angle_y at DEBUG while dipping each screen edge in turn:
+/* Determined empirically on hardware (2026-09-10, HAL firmware; re-confirmed
+   2026-09-11 on the Zephyr port -- the board is a rev E01+ with an
+   I3G4250D, register-compatible with the L3GD20) by logging angle_x/angle_y
+   at DEBUG while dipping each screen edge in turn:
 
        TOP edge down    -> angle_y negative
        BOTTOM edge down -> angle_y positive
@@ -30,7 +32,7 @@ typedef struct {
        RIGHT edge down  -> angle_x negative
 
    Hence up/down is driven by sensor Y (positive = DOWN) and left/right by
-   sensor X inverted (negative = RIGHT). Do not infer this from the L3GD20
+   sensor X inverted (negative = RIGHT). Do not infer this from the gyro
    package orientation on the PCB -- the LCD panel is physically rotated to
    get landscape, so the screen axes do not line up with the sensor axes. */
 #define TILT_DEFAULT_MAP ((TiltMap){ .ud_axis = 1, .lr_axis = 0, .ud_sign = 1.0f, .lr_sign = -1.0f })

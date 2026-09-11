@@ -72,9 +72,14 @@ int main(void)
         LOG_ERR("GPIO device(s) not ready");
         return 0;
     }
-    gpio_pin_configure_dt(&led0, GPIO_OUTPUT_INACTIVE);
-    gpio_pin_configure_dt(&led1, GPIO_OUTPUT_INACTIVE);
-    gpio_pin_configure_dt(&button, GPIO_INPUT);
+    /* A failed button configure would make gpio_pin_get_dt() return a
+       negative errno, which Button_PollEdge() would read as "pressed". */
+    if (gpio_pin_configure_dt(&led0, GPIO_OUTPUT_INACTIVE) != 0 ||
+        gpio_pin_configure_dt(&led1, GPIO_OUTPUT_INACTIVE) != 0 ||
+        gpio_pin_configure_dt(&button, GPIO_INPUT) != 0) {
+        LOG_ERR("GPIO pin configuration failed");
+        return 0;
+    }
 
     if (!device_is_ready(display_dev)) {
         LOG_ERR("Display device not ready");
