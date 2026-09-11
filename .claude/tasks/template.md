@@ -27,18 +27,21 @@
 
 ## Build commands
 
-<!-- Deterministic commands the implementer/reviewer should run. Default for this repo:
-     export PATH="/opt/st/stm32cubeclt_1.22.0/GNU-tools-for-STM32/bin:/opt/st/stm32cubeclt_1.22.0/Ninja/bin:$PATH"
-     cmake --preset Debug
-     cmake --build build/Debug
-     Override here if the task needs something else (e.g. Release preset). -->
+<!-- Deterministic commands the implementer/reviewer should run. Default for this repo
+     (a freestanding Zephyr v4.4.0 application built against the workspace at
+     ~/zephyrproject; never edit anything under ~/zephyrproject/):
+     source ~/zephyrproject/.venv/bin/activate
+     cd ~/zephyrproject
+     west build -p auto -b stm32f429i_disc1 ~/Work/stm32/snake -d ~/Work/stm32/snake/build
+     Override here if the task needs something else (e.g. a different board target). -->
 
 ## Test commands
 
 <!-- Deterministic, host-runnable test commands, if any exist for this task's area.
-     Note: as of this template's creation, this repo has no tracked/buildable automated
-     test suite (tests/ is untracked and only contains stray prebuilt binaries) — say so
-     explicitly if no real test command applies, rather than inventing one. -->
+     src/snake.c and src/tilt.c (game rules, tilt estimator) are hardware-independent
+     and have host-runnable tests under tests/, compiled with plain cc (no Zephyr,
+     no ztest) -- see CLAUDE.md for the exact commands. Say so explicitly if no real
+     test command applies to this task, rather than inventing one. -->
 
 ## Hardware verification
 

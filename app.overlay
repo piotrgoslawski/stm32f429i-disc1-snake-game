@@ -1,0 +1,39 @@
+/*
+ * Board overlay for stm32f429i_disc1: adds an alias for the red LED, fixes
+ * the user button polarity for this board revision, adds the L3GD20 gyro
+ * chip select alongside the LCD's on SPI5.
+ *
+ * The LTDC framebuffer format is NOT set here: in Zephyr v4.4.0 the &ltdc
+ * `pixel-format` property is the LTDC -> panel *output* format and the
+ * driver #errors on anything but RGB_888. The framebuffer (what
+ * display_write() consumes) is selected by CONFIG_STM32_LTDC_RGB565 in
+ * prj.conf.
+ */
+
+/ {
+	aliases {
+		led1 = &red_led_4;
+	};
+};
+
+/* Upstream DTS declares the user button GPIO_ACTIVE_LOW, but on this board
+ * PA0 is pulled low at rest and goes HIGH when pressed (UM1670 Table 7).
+ * Confirm on hardware (task hardware step 3); revert if the button turns
+ * out inverted. */
+&user_button {
+	gpios = <&gpioa 0 GPIO_ACTIVE_HIGH>;
+};
+
+/* SPI5 is shared by the LCD (board's mipi_dbi node, CS index 0, PC2) and
+ * the L3GD20 gyroscope (CS index 1, PC1). Assigning cs-gpios here replaces
+ * the board's single-entry property, so both chip selects must be listed. */
+&spi5 {
+	cs-gpios = <&gpioc 2 GPIO_ACTIVE_LOW>, <&gpioc 1 GPIO_ACTIVE_LOW>;
+
+	l3gd20: l3gd20@1 {
+		compatible = "snake,l3gd20";
+		reg = <1>;
+		spi-max-frequency = <10000000>;
+	};
+};
+

@@ -9,6 +9,14 @@ For the reverse question — everything a given pin *could* do (all alternate
 functions of all 114 GPIO pins, e.g. when picking pins for new external
 hardware) — see [pin-functions.md](pin-functions.md).
 
+**Since the port to Zephyr RTOS**, the *authoritative* pin/AF configuration
+is Zephyr's board devicetree
+(`~/zephyrproject/zephyr/boards/st/stm32f429i_disc1/stm32f429i_disc1.dts`,
+read-only) plus this repo's `app.overlay`, not any CubeMX/HAL config in this
+repo (there is none anymore). The table below documents the physical board
+wiring, which hasn't changed, and stays valid as hardware reference; see
+`CLAUDE.md` for how it maps to the current Zephyr configuration.
+
 ## Pins used by the current firmware
 
 | Signal | Pin | AF | Notes |

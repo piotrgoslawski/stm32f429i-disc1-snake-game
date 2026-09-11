@@ -1,0 +1,10 @@
+description: |
+  L3GD20 MEMS gyroscope (rev D01 stm32f429i_disc1 board), driven directly
+  by app code (src/l3gd20.c) rather than an in-tree Zephyr sensor driver --
+  Zephyr's in-tree i3g4250d driver rejects this chip's WHO_AM_I (0xD4).
+  This binding only exists to give the app a struct spi_dt_spec via
+  DT_NODELABEL(l3gd20); it has no driver bound to "snake,l3gd20".
+
+compatible: "snake,l3gd20"
+
+include: [spi-device.yaml]
