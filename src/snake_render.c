@@ -10,14 +10,22 @@
 /* Logical (landscape) canvas size the game draws to; the LTDC framebuffer
    behind `display_dev` is portrait (240 wide x 320 tall), so every logical
    rect/glyph is rotated 90 degrees before being written. See
-   SNAKE_RENDER_ROTATE_CW below. */
+   SNAKE_RENDER_FLIP_PX / SNAKE_RENDER_FLIP_PY below. */
 #define SNAKE_LOGICAL_W  320
 #define SNAKE_LOGICAL_H  240
 
-/* Which way the logical landscape canvas is rotated into the portrait
-   framebuffer. Flip this single constant (1 <-> 0) if the picture comes
-   out upside down or mirrored on hardware; do not touch tilt.h. */
-#define SNAKE_RENDER_ROTATE_CW  1
+/* How the logical landscape canvas lands in the portrait framebuffer:
+   logical x always runs along framebuffer y and logical y along
+   framebuffer x (the 90 degree turn), and each of the two framebuffer axes
+   is independently either straight or reversed. Both switches were settled
+   on hardware (2026-09-11): the LTDC scans the panel as a mirror image of
+   the HAL firmware's MADCTL=MV setup (MADCTL has no effect on the RGB
+   path), so a plain rotation cannot match the old orientation -- both axes
+   have to be reversed. If the picture is upside down flip
+   SNAKE_RENDER_FLIP_PX; if the text reads backwards flip
+   SNAKE_RENDER_FLIP_PY; do not touch tilt.h. */
+#define SNAKE_RENDER_FLIP_PX  1  /* 1: logical y=0 lands at framebuffer x=239 */
+#define SNAKE_RENDER_FLIP_PY  1  /* 1: logical x=0 lands at framebuffer y=319 */
 
 /* RGB565 colours actually used by this renderer. */
 #define SNAKE_BG_COLOR    0x0000u /* black */
@@ -38,19 +46,10 @@ static uint16_t row_buf[SNAKE_LOGICAL_H];
    rect (px, py, pw, ph) and fills it a row at a time. */
 static void fill_rect_logical(uint16_t lx, uint16_t ly, uint16_t w, uint16_t h, uint16_t color)
 {
-    uint16_t px, py, pw, ph;
-
-#if SNAKE_RENDER_ROTATE_CW
-    px = ly;
-    py = (uint16_t)(SNAKE_LOGICAL_W - lx - w);
-    pw = h;
-    ph = w;
-#else
-    px = (uint16_t)(SNAKE_LOGICAL_H - ly - h);
-    py = lx;
-    pw = h;
-    ph = w;
-#endif
+    uint16_t px = SNAKE_RENDER_FLIP_PX ? (uint16_t)(SNAKE_LOGICAL_H - ly - h) : ly;
+    uint16_t py = SNAKE_RENDER_FLIP_PY ? (uint16_t)(SNAKE_LOGICAL_W - lx - w) : lx;
+    uint16_t pw = h;
+    uint16_t ph = w;
 
     for (uint16_t i = 0; i < pw; i++) {
         row_buf[i] = color;
@@ -96,22 +95,16 @@ static void draw_glyph_logical(uint16_t gx, uint16_t gy, char c, uint16_t fg, ui
         uint8_t bits = glyph[row];
         for (int col = 0; col < 8; col++) {
             uint16_t color = (bits & (1 << col)) ? fg : bg;
-#if SNAKE_RENDER_ROTATE_CW
-            glyph_buf[7 - col][row] = color;
-#else
-            glyph_buf[col][7 - row] = color;
-#endif
+            /* glyph_buf[fb y offset][fb x offset]: logical x (col) runs
+               along framebuffer y, logical y (row) along framebuffer x. */
+            int fy = SNAKE_RENDER_FLIP_PY ? 7 - col : col;
+            int fx = SNAKE_RENDER_FLIP_PX ? 7 - row : row;
+            glyph_buf[fy][fx] = color;
         }
     }
 
-    uint16_t px, py;
-#if SNAKE_RENDER_ROTATE_CW
-    px = gy;
-    py = (uint16_t)(SNAKE_LOGICAL_W - gx - 8);
-#else
-    px = (uint16_t)(SNAKE_LOGICAL_H - gy - 8);
-    py = gx;
-#endif
+    uint16_t px = SNAKE_RENDER_FLIP_PX ? (uint16_t)(SNAKE_LOGICAL_H - gy - 8) : gy;
+    uint16_t py = SNAKE_RENDER_FLIP_PY ? (uint16_t)(SNAKE_LOGICAL_W - gx - 8) : gx;
 
     struct display_buffer_descriptor desc = {
         .buf_size = sizeof(glyph_buf),

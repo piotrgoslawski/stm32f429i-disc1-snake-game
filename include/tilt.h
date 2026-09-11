@@ -21,23 +21,19 @@ typedef struct {
     float   lr_sign;  /* +1/-1: positive maps to RIGHT */
 } TiltMap;
 
-/* Determined empirically on hardware by dipping each screen edge in turn
-   and watching which way the snake steers. Re-measured on the Zephyr port
-   (2026-09-11, rev E01+ board with I3G4250D, picture rotated by
-   snake_render.c):
+/* Determined empirically on hardware (rev D01 board, 2026-09-10) by logging
+   angle_x/angle_y at DEBUG while dipping each screen edge in turn:
 
-       TOP edge down    -> angle_y positive
-       BOTTOM edge down -> angle_y negative
+       TOP edge down    -> angle_y negative
+       BOTTOM edge down -> angle_y positive
        LEFT edge down   -> angle_x positive
        RIGHT edge down  -> angle_x negative
 
-   Hence up/down is driven by sensor Y inverted (negative = DOWN) and
-   left/right by sensor X inverted (negative = RIGHT). The HAL-era firmware
-   (2026-09-10) had ud_sign = +1; up/down came out reversed after the port
-   and only this sign was flipped. Do not infer this from the gyro package
-   orientation on the PCB -- the LCD panel is physically rotated to get
-   landscape, so the screen axes do not line up with the sensor axes. */
-#define TILT_DEFAULT_MAP ((TiltMap){ .ud_axis = 1, .lr_axis = 0, .ud_sign = -1.0f, .lr_sign = -1.0f })
+   Hence up/down is driven by sensor Y (positive = DOWN) and left/right by
+   sensor X inverted (negative = RIGHT). Do not infer this from the L3GD20
+   package orientation on the PCB -- the LCD panel is physically rotated to
+   get landscape, so the screen axes do not line up with the sensor axes. */
+#define TILT_DEFAULT_MAP ((TiltMap){ .ud_axis = 1, .lr_axis = 0, .ud_sign = 1.0f, .lr_sign = -1.0f })
 
 typedef struct {
     float angle_x, angle_y;

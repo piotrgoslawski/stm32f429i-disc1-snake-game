@@ -71,10 +71,13 @@ register pokes. The board's `mipi_dbi`/`ili9341` node only programs the
 panel once at boot; after that, pixels are `memcpy`'d into an external-SDRAM
 framebuffer that Zephyr's `set_orientation` cannot rotate — **the
 framebuffer is portrait, 240 pixels wide by 320 tall**, while the game's
-grid is landscape (320x240). `src/snake_render.c` rotates every logical
-rect and glyph into portrait coordinates in software (one switchable
-constant, `SNAKE_RENDER_ROTATE_CW`); do not assume framebuffer coordinates
-match the game's logical coordinates anywhere else in the codebase.
+grid is landscape (320x240). `src/snake_render.c` maps every logical
+rect and glyph into portrait coordinates in software (two switchable
+constants, `SNAKE_RENDER_FLIP_PX` / `SNAKE_RENDER_FLIP_PY`, settled on
+hardware — the LTDC path scans the panel as a mirror image of the old
+MADCTL=MV firmware, so a pure rotation cannot match); do not assume
+framebuffer coordinates match the game's logical coordinates anywhere else
+in the codebase.
 
 ## Working with this codebase
 
