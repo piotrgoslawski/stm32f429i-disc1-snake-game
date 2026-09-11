@@ -65,3 +65,11 @@ void SnakeRender_DrawEndScreen(const SnakeGame *g, const char *msg)
     ILI9341_DrawString(4, y, msg, SNAKE_END_FG, SNAKE_END_BG);
     ILI9341_DrawString(4, (uint16_t)(y + 16), score_line, SNAKE_END_FG, SNAKE_END_BG);
 }
+
+void SnakeRender_DrawMessage(const char *msg)
+{
+    ILI9341_FillScreen(SNAKE_BG_COLOR);
+
+    uint16_t y = ILI9341_HEIGHT / 2 - 8;
+    ILI9341_DrawString(4, y, msg, SNAKE_END_FG, SNAKE_END_BG);
+}

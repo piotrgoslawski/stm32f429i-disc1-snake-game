@@ -28,6 +28,10 @@ void SnakeRender_UpdateStep(const SnakeGame *g, uint8_t old_tail_x, uint8_t old_
    (which is left visible underneath, i.e. no clear). */
 void SnakeRender_DrawEndScreen(const SnakeGame *g, const char *msg);
 
+/* Clears the screen and shows a single centred message line. Used for
+   transient status screens (e.g. calibration) that precede a game. */
+void SnakeRender_DrawMessage(const char *msg);
+
 #ifdef __cplusplus
 }
 #endif

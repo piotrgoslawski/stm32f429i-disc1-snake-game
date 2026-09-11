@@ -74,6 +74,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     Core/Src/log.c
     Core/Src/snake.c
     Core/Src/snake_render.c
+    Core/Src/tilt.c
 )
 
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
